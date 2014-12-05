@@ -3,15 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Welcome to Flask on OpenShift</title>
+  <title>30Hills</title>
 
+  <link href='/css/bootstrap.css' rel='stylesheet' type='text/css' />
+  <link href='/css/bootstrap-theme.css' rel='stylesheet' type='text/css' />
   <link href='/css/site.css' rel='stylesheet' type='text/css' />
 </head>
 <body>
+    <div id="main-page">
+        <header>
+            <h1>30Hillbook</h1>
+        </header>
 
+        <nav>
+            <select class="selectpicker">
+              <option value="(none)">Select user</option>
+            </select>
 
-aa test
+            <input type="text"/>
 
+            <button class="btn btn-info">Add person</button>
+        </nav>
 
+        <section>
+            <h2>Ognjen Apic</h2>
+            <p>gender: male</p>
+            <p>age: 25</p>
+            <p>friends: 3333</p>
+
+        </section>
+
+        <aside>
+            <ul class="nav nav-tabs">
+              <li role="presentation" class="active"><a href="#">Friends</a></li>
+              <li role="presentation"><a href="#">Friends of friends</a></li>
+              <li role="presentation"><a href="#">Suggested friends</a></li>
+            </ul>
+        </aside>
+    </div>
 </body>
 </html>

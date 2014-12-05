@@ -47,17 +47,7 @@ if __name__ == '__main__':
       pass
 
   print('Starting WSGIServer type %s on %s:%d ... ' % (fwtype, ip, port))
-  if fwtype == "gevent":
-    from gevent.pywsgi import WSGIServer
-    WSGIServer((ip, port), application.app).serve_forever()
-
-  elif fwtype == "cherrypy":
-    from cherrypy import wsgiserver
-    server = wsgiserver.CherryPyWSGIServer(
-      (ip, port), application.app, server_name=host_name)
-    server.start()
-
-  elif fwtype == "flask":
+  if fwtype == "flask":
     from flask import Flask
     server = Flask(__name__)
     server.wsgi_app = application.app
