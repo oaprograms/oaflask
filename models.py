@@ -1,5 +1,6 @@
 __author__ = 'Ognjen'
 from flask_sqlalchemy import SQLAlchemy
+from errors import ValidationError
 
 db = SQLAlchemy()
 
@@ -22,25 +23,33 @@ class User(db.Model):
             age =  ''
         return ';'.join([str(self.id),self.first_name,self.last_name,str(age),self.gender])
 
-    def to_json(self):
-        return{
-            'id':self.id,
-            'first_name':self.first_name,
-            'last_name':self.last_name,
-            'age':self.age,
-            'gender':self.gender,
-            'friends':None
-        }
+    def to_json(self, full_info = False):
+        if full_info:
+            return{
+                'id':self.id,
+                'first_name':self.first_name,
+                'last_name':self.last_name,
+                'age':self.age,
+                'gender':self.gender
+            }
+        else:
+            return{
+                'id':self.id,
+                'first_name':self.first_name,
+                'last_name':self.last_name
+            }
+
 
     def from_json(self, json):
-        try: #TODO: finish this
-            id = json['id']
-            first_name = json['first_name']
-            last_name = json['last_name']
-            age = json['age']
-            gender = json['gender']
-        except:
-            pass # no required parameters
+        if 'id' in json:
+            self.id = json['id']
+        try:
+            self.first_name = json['first_name']
+            self.last_name = json['last_name']
+            self.age = json['age']
+            self.gender = json['gender']
+        except KeyError as e:
+            raise ValidationError('Invalid User, missing: ' + e.args[0]) # no required parameters
 
     #def get_url(self):
     #    return url_for('api.get_user', id=self.id, _external=True)
@@ -65,7 +74,7 @@ class User(db.Model):
             and all(x.isdigit() for x in friends):
 
             # make object
-            self.id = int(id)
+            #self.id = int(id) # problem, next_id is not updated (screws up future inserts)
             self.first_name = first_name
             self.last_name = last_name
             if age:

@@ -1,5 +1,45 @@
-#main-page{
+#mainPage {
     padding: 10px 20px;
-
 }
 
+.tab-pane{
+    padding: 10px;
+}
+.modal-dialog{
+    width: 500px;
+}
+#userSelect{
+    width: 300px;
+    display: inline-block;
+}
+nav{
+    background-color: #ddd;
+    padding: 10px;
+}
+nav button{
+    margin-left: 8px;
+}
+#selectPerson{
+    width: 200px;
+    display: inline-block;
+}
+#searchPerson{
+    width: 250px;
+    display: inline-block;
+}
+#userEditSaveBtn{
+    padding-left: 30px;
+    padding-right: 30px;
+}
+aside{
+    padding: 20px;
+}
+.tab-pane{
+    border: 1px solid #ddd;
+    border-top: none;
+    -webkit-box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
+    -moz-box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
+    box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
+    min-height: 300px;
+    padding: 20px 40px;
+}

@@ -1,45 +1,118 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>30Hills</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>30Hills</title>
 
-  <link href='/css/bootstrap.css' rel='stylesheet' type='text/css' />
-  <link href='/css/bootstrap-theme.css' rel='stylesheet' type='text/css' />
-  <link href='/css/site.css' rel='stylesheet' type='text/css' />
+    <link href='/static/css/bootstrap.css' rel='stylesheet' type='text/css' />
+    <link href='/static/css/bootstrap-theme.css' rel='stylesheet' type='text/css' />
+    <link href='/static/css/site.css' rel='stylesheet' type='text/css' />
+
+
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/angular.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
 </head>
-<body>
-    <div id="main-page">
+<body ng-app="hillsbook">
+    <div id="mainPage" ng-controller="UsersCtrl" >
+
         <header>
             <h1>30Hillbook</h1>
         </header>
-
         <nav>
-            <select class="selectpicker">
-              <option value="(none)">Select user</option>
-            </select>
-
-            <input type="text"/>
-
-            <button class="btn btn-info">Add person</button>
+            <div id="selectPerson">
+                <select class="form-control" ng-options="u.id as u.first_name + ' ' + u.last_name for u in users"
+                        ng-change="reloadUser()" ng-model="userId">
+                  <!--<option ng-repeat="user in users" value="user.id" >-->
+                      <!--{{user.first_name}} {{user.last_name}}-->
+                  <!--</option>-->
+                </select>
+            </div>
+            <div id="searchPerson">
+                <input type="text" class="form-control" placeholder="(Search users)"/>
+            </div>
+            <button class="btn btn-info" data-toggle="modal" data-target="#addPersonModal" ng-click="editUser()">Edit person</button>
+            <button class="btn btn-info" data-toggle="modal" data-target="#addPersonModal">+ Add person</button>
         </nav>
-
-        <section>
-            <h2>Ognjen Apic</h2>
-            <p>gender: male</p>
-            <p>age: 25</p>
-            <p>friends: 3333</p>
+        <section class="col-sm-6">
+            <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+            <table class="table">
+                <tr>
+                    <td>gender:</td>
+                    <td>{{user.gender}}</td>
+                </tr>
+                <tr>
+                    <td>age:</td>
+                    <td>{{user.age}}</td>
+                </tr>
+            </table>
 
         </section>
 
-        <aside>
+        <aside class="col-sm-6">
             <ul class="nav nav-tabs">
-              <li role="presentation" class="active"><a href="#">Friends</a></li>
-              <li role="presentation"><a href="#">Friends of friends</a></li>
-              <li role="presentation"><a href="#">Suggested friends</a></li>
+              <li role="presentation" class="active" ><a href="#friends" data-toggle="tab" ng-click="loadFriendsTab(1)">Friends</a></li>
+              <li role="presentation"><a href="#fof" data-toggle="tab" ng-click="loadFriendsTab(2)">Friends of friends</a></li>
+              <li role="presentation"><a href="#suggestions" data-toggle="tab" ng-click="loadFriendsTab(3)">Suggested friends</a></li>
             </ul>
+            <div class="tab-content">
+              <div id="friends" class="tab-pane active">aaa</div>
+              <div id="fof" class="tab-pane">bbb</div>
+              <div id="suggestions" class="tab-pane">ccc</div>
+            </div>
         </aside>
+
+
+        <!-- Add person modal -->
+        <div class="modal fade" my-modal id="addPersonModal" tabindex="-1" role="dialog" aria-labelledby="addPersonModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="addPersonModalLabel">Person info</h4>
+              </div>
+              <div class="modal-body">
+                  <form name="userForm" role="form" class="form-horizontal">
+                      <div class="form-group">
+                          <label for="userFirstName" class="col-sm-3 control-label">First name:</label>
+                          <div class="col-sm-8">
+                            <input id="userFirstName" type="text" ng-model="newUser.first_name" class="form-control" placeholder="First Name"/>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                          <label for="userLastName" class="col-sm-3 control-label">Last name:</label>
+                          <div class="col-sm-8">
+                            <input id="userLastName" type="text" ng-model="newUser.last_name" class="form-control" placeholder="Last Name"/>
+                          </div>
+                      </div>
+                      <div class="form-group" >
+                          <label for="userAge" class="col-sm-3 control-label">Age:</label>
+                          <div class="col-sm-4">
+                            <input id="userAge" type="number" ng-model="newUser.age" class="form-control" placeholder="Age"/>
+                          </div>
+                      </div>
+                      <div class="form-group" >
+                          <label for="userGender" class="col-sm-3 control-label">Gender:</label>
+                          <div class="col-sm-5">
+                              <select id="userGender" class="form-control" ng-model="newUser.gender">
+                                <option value="" selected disabled>Select gender</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                              </select>
+                          </div>
+                      </div>
+
+                  </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="dismissPersonEdit()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="userEditSaveBtn" ng-click="savePersonEdit()">Save </button>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
 </body>
 </html>

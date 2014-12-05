@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from flask import Flask, request, flash, url_for, redirect, \
-     render_template, abort, send_from_directory
+     render_template, abort, send_from_directory, make_response
 from flask_sqlalchemy import SQLAlchemy
 import api
 import models
@@ -20,7 +20,7 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return make_response(open('templates/index.html').read())
 
 @app.route('/<path:resource>')
 def serveStaticResource(resource):
@@ -37,7 +37,8 @@ def initdata():
         lines = f.read().split('\n')
         for line in lines:
             if line.strip():
-                u = models.User().from_csv(line)
+                u = models.User()
+                u.from_csv(line)
                 db.session.add(u)
                 db.session.commit()
     return 'data init succeeded'
