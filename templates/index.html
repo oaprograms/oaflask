@@ -26,7 +26,14 @@
             </select>
         </div>
         <div id="searchPerson" class="tulbar">
-            <input type="text" class="form-control" placeholder="(Search users)"/>
+            <input type="text" class="form-control" ng-model="searchUserText" typeahead-wait-ms="150"
+                   typeahead-min-length="1" placeholder="(Search users)" typeahead-on-select="reloadUserId(searchUserText.id)"
+             typeahead="u as u.first_name + ' ' + u.last_name for u in searchUsers($viewValue)"  />
+
+            <!--<input type="text" class="form-control"-->
+             <!--typeahead-wait-ms="150" typeahead-min-length="1"-->
+             <!--typeahead="user as user for user in searchUsers1($viewValue) | filter:$viewValue"  />-->
+            <!--.first_name + ' ' + user.last_name-->
         </div>
         <div class="tulbar">
             <button class="btn btn-info" ng-click="openUserEditModal()">Edit person</button>

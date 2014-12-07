@@ -26,11 +26,21 @@
                     //TODO: set tab to 1
                 });
         };
+
+        $scope.searchUsers = function (query) {
+            return $http.get('/users/search/' + query)
+                .then(function (response) {
+                    return response.data.users;
+
+            });
+        };
+
         $scope.reloadUserId = function (id) {
+//            $scope.searchUserText = null;
             $scope.userId = id;
             $scope.reloadUser();
         };
-        $scope.alert = function(){
+        $scope.alert = function () {
             alert();
         };
         $scope.addFriend = function (friend_id) {
@@ -70,7 +80,7 @@
 
         $scope.reloadUserInfo = function (tab_id) {
             $scope.tabId = tab_id;
-            if($scope.userId){
+            if ($scope.userId) {
                 if ($scope.tabId == 1) {
                     $scope.reloadFriends();
                 } else if ($scope.tabId == 2) {
@@ -106,7 +116,7 @@
         $scope.tabId = 1;
         $scope.reloadUsers(true);
 
-        $scope.user = {gender:'male'};
+        $scope.user = {gender: 'male'};
         $scope.userInfo = {};
 //        $scope.reloadUser();
 
