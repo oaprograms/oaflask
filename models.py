@@ -4,13 +4,80 @@ from errors import ValidationError
 
 db = SQLAlchemy()
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(80))
-    last_name = db.Column(db.String(80))
-    age = db.Column(db.Integer)
-    gender = db.Column(db.String(10))
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
+#logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
 
+friendship = db.Table('friendship', db.metadata,
+    db.Column("id1", db.Integer, db.ForeignKey('user.id'),primary_key=True),
+    db.Column("id2", db.Integer, db.ForeignKey('user.id'),primary_key=True)
+)
+
+def add_friendship(id_1, id_2):
+    if id_1 == id_2:
+        raise ValidationError('Error: same user u1 and u2')
+    try:      # TODO: is this atomic?
+        db.engine.execute(friendship.insert(), {'id1':id_1, 'id2':id_2}, {'id1':id_2, 'id2':id_1})
+        #db.session.commit()
+    except:
+        print 'add_friendship error'
+
+
+#@staticmethod
+def remove_friendship(id_1, id_2):
+    #f1 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_1, friendship.c.id2==id_2)).one() #.filter().one()
+    #f2 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_2, friendship.c.id2==id_1)).one() #.filter().one()
+    #db.session.delete(f1) # no can do
+    #db.session.delete(f2)
+    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_1, friendship.c.id2 == id_2)))
+    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_2, friendship.c.id2 == id_1)))
+    db.session.commit()
+
+def get_friends(id):
+    #return db.engine.execute("select u.id, u.first_name, u.last_name from user as u, friendship where u.id = friendship.id2 and friendship.id1 = %(idd)s", idd=id).fetchall()
+    return User.query.get_or_404(id).friends
+
+def get_fof(id): #TODO: try to reduce to single sql query
+    ret = []
+    ret_ids = set()
+    friends = User.query.get_or_404(id).friends
+    friend_ids = [u.id for u in friends] + [id]
+    for friend in friends:
+        for fof in friend.friends:
+            if fof.id not in ret_ids and fof.id not in friend_ids:
+                ret_ids.add(fof.id)
+                ret.append(fof.to_json())
+    return ret
+
+def get_suggested(id): #TODO: try to reduce to single sql query
+    ret = []
+    ret_ids = {}
+    friends = User.query.get_or_404(id).friends
+    friend_ids = [u.id for u in friends] + [id]
+    for friend in friends:
+        for fof in friend.friends:
+            if fof.id not in friend_ids:
+                if fof.id not in ret_ids:
+                    ret_ids[fof.id] = 1
+                elif ret_ids[fof.id] == 1:
+                    ret.append(fof.to_json())
+                    ret_ids[fof.id] += 1
+                else:
+                    ret_ids[fof.id] += 1
+    return ret
+
+class User(db.Model):
+    __tablename__ ='user'
+
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.Unicode(20))
+    last_name = db.Column(db.Unicode(20))
+    age = db.Column(db.Integer)
+    gender = db.Column(db.String(6))
+    friends = db.relationship("User", secondary=friendship,
+                           primaryjoin=id==friendship.c.id1,
+                           secondaryjoin=id==friendship.c.id2,
+    )
     #def __init__(self, first_name, last_name, age, gender):
     #    self.first_name = first_name
     #    self.last_name = last_name
@@ -43,13 +110,27 @@ class User(db.Model):
     def from_json(self, json):
         if 'id' in json:
             self.id = json['id']
-        try:
-            self.first_name = json['first_name']
-            self.last_name = json['last_name']
-            self.age = json['age']
+        if ('first_name' not in json) or (len(json['first_name'])>20):
+            raise ValidationError('Invalid User first name')
+        self.first_name = json['first_name']
+        if 'last_name' in json:
+            if not len(json['last_name'])>20:
+                self.last_name = json['last_name']
+            else:
+                raise ValidationError('Invalid User last name')
+        else:
+            self.last_name=""
+        if 'age' in json and json['age'] is not None:
+            if str(json['age']).isdigit():
+                 self.age = json['age']
+            else:
+                raise ValidationError('Invalid User age')
+        if 'gender' in json and json['gender'] in ['male', 'female', '', None]:
             self.gender = json['gender']
-        except KeyError as e:
-            raise ValidationError('Invalid User, missing: ' + e.args[0]) # no required parameters
+        elif not 'gender' in json:
+            pass
+        else:
+            raise ValidationError('Invalid User gender')
 
     #def get_url(self):
     #    return url_for('api.get_user', id=self.id, _external=True)

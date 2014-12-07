@@ -26,12 +26,19 @@ def index():
 def serveStaticResource(resource):
     return send_from_directory('static/', resource)
 
-@app.route('/initdb/')
+@app.route('/admin-resetdb/')
+def resetdb():
+    dropdb()
+    initdb()
+    initdata()
+    return 'reset succeeded'
+
+#@app.route('/initdb/')
 def initdb():
     db.create_all()
     return 'db.create_all() succeeded'
 
-@app.route('/initdata/')
+#@app.route('/initdata/')
 def initdata():
     with codecs.open('data.txt', "r", "utf-8") as f:
         lines = f.read().split('\n')
@@ -40,11 +47,18 @@ def initdata():
                 u = models.User()
                 u.from_csv(line)
                 db.session.add(u)
-                db.session.commit()
+        db.session.commit()
+        for line in lines:
+            if line.strip():
+                id = int(line.split(';')[0])
+                friend_ids = [int(f) for f in line.split(';')[-1].split(',')]
+                for f in friend_ids:
+                    models.add_friendship(id, f)
+        db.session.commit()
     return 'data init succeeded'
 
 
-@app.route('/dropdb/')
+#@app.route('/dropdb/')
 def dropdb():
     db.drop_all()
     return 'db.drop_all() succeeded'

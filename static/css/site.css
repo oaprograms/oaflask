@@ -1,30 +1,35 @@
-#mainPage {
-    padding: 10px 20px;
+body{
+    background-color: #ddd;
 }
-
+#mainPage {
+    padding: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+}
+header {
+    padding-left: 20px;
+}
 .tab-pane{
     padding: 10px;
 }
 .modal-dialog{
     width: 500px;
 }
-#userSelect{
-    width: 300px;
-    display: inline-block;
-}
 nav{
     background-color: #ddd;
-    padding: 10px;
+    padding: 8px 10px;
+    border-radius: 15px;
 }
 nav button{
-    margin-left: 8px;
+    margin-left: 5px;
 }
 #selectPerson{
-    width: 200px;
+    width: 250px;
     display: inline-block;
 }
 #searchPerson{
-    width: 250px;
+    width: 350px;
     display: inline-block;
 }
 #userEditSaveBtn{
@@ -37,9 +42,33 @@ aside{
 .tab-pane{
     border: 1px solid #ddd;
     border-top: none;
+    min-height: 300px;
+    padding: 20px 40px;
+}
+.light-shadow{
     -webkit-box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
     -moz-box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
     box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
-    min-height: 300px;
-    padding: 20px 40px;
+}
+
+.boy-name{
+    /*color: #4a87c2;*/
+    color: #19447b;
+}
+.girl-name{
+    /*color: #a05f73;*/
+    color: #a44a77;
+}
+.tulbar{
+    padding: 6px 3px;
+    display: inline-block;
+}
+#addFriend{
+    width: 150px;
+    display: inline-block;
+}
+.friend-unfriend{
+    color: gray; !important
+    display: inline-block;
+    margin-left: 10px;
 }

@@ -1,76 +1,164 @@
-(function(){
+(function () {
     "use strict";
-    var app = angular.module("hillsbook", []);
-    app.controller("UsersCtrl", ["$scope", "$http",usersCtrl]);
+    var app = angular.module("hillsbook", ["ui.bootstrap"]);
+    app.controller("UsersCtrl", ["$scope", "$http", "$modal", "$log", usersCtrl]);
 
-    function usersCtrl($scope, $http){
+    function usersCtrl($scope, $http, $modal, $log) {
+        var ctrl = this;
 
-        $scope.reloadUsers = function(){
+//        $http.put('/users/1/friends', {friends: [2,3,4]});
+
+        $scope.reloadUsers = function (resetUser) {
+            if (typeof(resetUser) === 'undefined')resetUser = false;
             $http.get('/users/').
-                success(function(data) {
+                success(function (data) {
                     $scope.users = data.users;
+                    if (resetUser)$scope.userId = $scope.users[0].id;
                     $scope.reloadUser();
                 });
         };
-        $scope.reloadUser = function(){
+        $scope.reloadUser = function () {
             $http.get('/users/' + $scope.userId).
-            success(function(data) {
-                $scope.user = data;
+                success(function (data) {
+                    $scope.user = data;
+                    $scope.userInfo = {};
+                    $scope.reloadUserInfo($scope.tabId);
+                    //TODO: set tab to 1
+                });
+        };
+        $scope.reloadUserId = function (id) {
+            $scope.userId = id;
+            $scope.reloadUser();
+        };
+        $scope.alert = function(){
+            alert();
+        };
+        $scope.addFriend = function (friend_id) {
+            $scope.addFriendId = 0;
+            $http.put('/users/' + $scope.userId + '/friends/', {'friend': friend_id}).
+                success(function (data) {
+                    $scope.reloadUser();
+                });
+        };
+        $scope.removeFriend = function (friend_id) {
+            $http.delete('/users/' + $scope.userId + '/friends/' + friend_id).
+                success(function (data) {
+                    $scope.reloadUser();
+                });
+        };
+        $scope.reloadFriends = function () {
+            $http.get('/users/' + $scope.userId + '/friends/').
+                success(function (data) {
+                    $scope.userInfo.friends = data.users;
+                });
+        };
+        $scope.reloadFof = function () {
+            $http.get('/users/' + $scope.userId + '/fof/').
+                success(function (data) {
+                    $scope.userInfo.fof = data.users;
+
+                });
+        };
+
+        $scope.reloadSuggestions = function () {
+            $http.get('/users/' + $scope.userId + '/suggested/').
+                success(function (data) {
+                    $scope.userInfo.suggestions = data.users;
+                });
+        };
+
+
+        $scope.reloadUserInfo = function (tab_id) {
+            $scope.tabId = tab_id;
+            if($scope.userId){
+                if ($scope.tabId == 1) {
+                    $scope.reloadFriends();
+                } else if ($scope.tabId == 2) {
+                    $scope.reloadFof();
+                } else if ($scope.tabId == 3) {
+                    $scope.reloadSuggestions();
+                }
+            }
+        };
+
+        $scope.openUserEditModal = function () {
+            $scope.newUser = angular.copy($scope.user);
+            $scope.openUserModal();
+        };
+
+        $scope.openUserAddModal = function () {
+            $scope.newUser = {};
+            $scope.openUserModal();
+        };
+
+        $scope.openUserModal = function () {
+            var modalInstance = $modal.open({
+                templateUrl: 'userEditTemplate.html',
+                controller: 'EditModalInstanceCtrl',
+                resolve: {
+                    parentScope: function () {
+                        return $scope;
+                    }
+                }
             });
         };
-        $scope.loadFriendsTab = function(tab_id){
-            alert(tab_id);
-        };
-        $scope.editUser = function(){
-            $scope.newUser = angular.copy($scope.user);
+
+        $scope.tabId = 1;
+        $scope.reloadUsers(true);
+
+        $scope.user = {};
+        $scope.userInfo = {};
+//        $scope.reloadUser();
+
+
+    }
+
+    app.controller('EditModalInstanceCtrl', function ($scope, $modalInstance, $http, parentScope) {
+        $scope.newUser = parentScope.newUser;
+        $scope.editMode = $scope.newUser.hasOwnProperty('id');
+
+        $scope.userDelete = function () {
+            if (confirm('Delete person: ' + $scope.newUser.first_name + ' ' + $scope.newUser.last_name + '?')) {
+                $http.delete('/users/' + $scope.newUser.id)
+                    .success(function (data) {
+                        parentScope.reloadUsers(true);
+                        $modalInstance.close('ok');
+                    }).error(function () {
+                        alert("User couldn't be deleted. Please try again.");
+                    });
+            }
         };
 
-        $scope.savePersonEdit = function(){
-
-            if ($scope.newUser.id){
+        $scope.savePersonEdit = function () {
+            if ($scope.editMode) {
                 // edit user
                 $http.put('/users/' + $scope.newUser.id, $scope.newUser)
-                    .success(function(data) {
-                        $scope.reloadUsers();
-                        $scope.dismissDialog();
-                    }).error(function(){
+                    .success(function (data) {
+                        parentScope.reloadUsers(false);
+                        $modalInstance.close('ok');
+                    }).error(function () {
                         alert("Data couldn't be saved. Please try again.");
                     });
             } else {
                 // add new user
                 $http.post('/users/', $scope.newUser)
-                    .success(function(data) {
-                        $scope.reloadUsers();
-                        $scope.dismissDialog();
-                    }).error(function(){
+                    .success(function (data) {
+                        parentScope.reloadUsers(false);
+                        $modalInstance.close('ok');
+                    }).error(function () {
                         alert("Data couldn't be saved. Please try again.");
                     });
             }
         };
-
-        $scope.dismissPersonEdit = function(tab_id){
-            $scope.newUser = {};
+$scope.alert = function(){
+    alert();
+};
+        $scope.userEditOk = function () {
+            $scope.savePersonEdit();
         };
 
-        $scope.reloadUsers();
-
-        $scope.userId = 1;
-        $scope.user = {};
-        $scope.user_friends = [];
-        $scope.user_fof = [];
-        $scope.user_suggestions = [];
-
-        $scope.reloadUser();
-    }
-
-    app.directive('myModal', function() {
-       return {
-         restrict: 'A',
-         link: function(scope, element, attr) {
-           scope.dismissDialog = function() {
-               element.modal('hide');
-           };
-         }
-       }
+        $scope.userEditCancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
     });
 }());
