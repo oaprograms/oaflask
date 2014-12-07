@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 import models
 from models import db
 from models import User
-from errors import ValidationError
+from error import ValidationError
 
 api = Blueprint('api', __name__)
 

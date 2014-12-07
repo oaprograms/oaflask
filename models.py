@@ -1,6 +1,6 @@
 __author__ = 'Ognjen'
 from flask_sqlalchemy import SQLAlchemy
-from errors import ValidationError
+from error import ValidationError
 
 db = SQLAlchemy()
 
