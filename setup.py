@@ -6,6 +6,6 @@ setup(name='oa-test flask',
       author='Ognjen Apic',
       author_email='ognjen.apic@gmail.com',
       url='http://www.python.org/sigs/distutils-sig/',
-      install_requires=['Flask==0.10.1', 'Flask-SQLAlchemy==2.0'],
+      install_requires=['Flask==0.10.1', 'Flask-SQLAlchemy==2.0', 'SQLAlchemy-Searchable'],
      )
 
