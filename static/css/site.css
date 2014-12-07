@@ -3,6 +3,7 @@ body{
 }
 #mainPage {
     padding: 10px;
+    padding-bottom: 50px;
     max-width: 900px;
     margin: 0 auto;
     background-color: white;
@@ -53,11 +54,11 @@ aside{
 
 .boy-name{
     /*color: #4a87c2;*/
-    color: #19447b;
+    color: #36556b;
 }
 .girl-name{
     /*color: #a05f73;*/
-    color: #a44a77;
+    color: #8c556c;
 }
 .tulbar{
     padding: 6px 3px;

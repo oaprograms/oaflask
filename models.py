@@ -1,12 +1,19 @@
 __author__ = 'Ognjen'
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, BaseQuery
 from error import ValidationError
+from sqlalchemy_searchable import make_searchable
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import SearchQueryMixin
 
 db = SQLAlchemy()
+make_searchable()
 
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 #logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
+
+class UserQuery(BaseQuery, SearchQueryMixin):
+    pass
 
 friendship = db.Table('friendship', db.metadata,
     db.Column("id1", db.Integer, db.ForeignKey('user.id'),primary_key=True),
@@ -67,6 +74,7 @@ def get_suggested(id): #TODO: try to reduce to single sql query
     return ret
 
 class User(db.Model):
+    query_class = UserQuery
     __tablename__ ='user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,6 +82,7 @@ class User(db.Model):
     last_name = db.Column(db.Unicode(20))
     age = db.Column(db.Integer)
     gender = db.Column(db.String(6))
+    search_vector = db.Column(TSVectorType('first_name', 'last_name'))
     friends = db.relationship("User", secondary=friendship,
                            primaryjoin=id==friendship.c.id1,
                            secondaryjoin=id==friendship.c.id2,

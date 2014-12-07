@@ -6,10 +6,10 @@
     <title>30Hills</title>
 
     <link href='/static/css/bootstrap.css' rel='stylesheet' type='text/css'/>
-    <!--<link href='/static/css/bootstrap-theme.css' rel='stylesheet' type='text/css' />-->
     <link href='/static/css/site.css' rel='stylesheet' type='text/css'/>
 
     <script src="/static/js/angular.min.js"></script>
+    <!--<script src="/static/js/angular-ui-router.min.js"></script>-->
     <script src="/static/js/ui-bootstrap-tpls-0.12.0.min.js"></script>
     <script src="/static/js/main.js"></script>
 </head>
@@ -34,11 +34,11 @@
         </div>
     </nav>
 
-    <div class="row" >
+    <div class="row">
         <section class="col-sm-5 col-xs-12" ng-class="(user.gender=='male') ? 'boy-name' : 'girl-name'">
 
             <h3 class="col-sm-offset-1">
-                <img src="/img/{{user.gender}}.png" alt="No image"/>
+                <img ng-src="/img/{{(user.gender=='male') ? 'male':'female'}}.png" alt="No image"/>
                 {{ user.first_name }} {{ user.last_name }}
             </h3>
             <table class="table user-info-table col-sm-offset-1">
@@ -50,15 +50,19 @@
                     <td>age:</td>
                     <td>{{user.age}}</td>
                 </tr>
+                <tr>
+                    <td>
+                        <label for="addFriend">Add friend: </label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="addFriend"
+                                ng-options="u.id as u.first_name + ' ' + u.last_name for u in users"
+                                ng-change="addFriend(addFriendId)" ng-model="addFriendId">
+                            <option value=''>- Choose -</option>
+                        </select>
+                    </td>
+                </tr>
             </table>
-            <div class="col-sm-offset-1">
-                <label for="addFriend">Add friend: </label>
-                <!--<input type="text" id="addFriend" class="form-control" placeholder="(Search users)"/>-->
-                <select class="form-control" id="addFriend" ng-options="u.id as u.first_name + ' ' + u.last_name for u in users"
-                    ng-change="addFriend(addFriendId)" ng-model="addFriendId">
-                    <option value=''>- Choose -</option>
-                </select>
-            </div>
         </section>
 
         <aside class="col-sm-6 col-sm-offset-1 col-xs-12">
@@ -87,7 +91,7 @@
                     <ul class="user-list">
                         <li ng-repeat="u in userInfo.suggestions">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
-                             <a href class="friend-unfriend" ng-click="addFriend(u.id)">[add friend]</a>
+                            <a href class="friend-unfriend" ng-click="addFriend(u.id)">[add friend]</a>
                         </li>
                     </ul>
                 </tab>
@@ -104,26 +108,30 @@
 
 
             <form name="userForm" novalidate role="form" class="form-horizontal">
-                <div class="form-group" ng-class="{'has-error':userForm.userFirstName.$invalid && userForm.userFirstName.$dirty}">
+                <div class="form-group"
+                     ng-class="{'has-error':userForm.userFirstName.$invalid && userForm.userFirstName.$dirty}">
                     <label for="userFirstName" class="col-sm-3 control-label">First name:</label>
 
                     <div class="col-sm-8">
                         <input id="userFirstName" name="userFirstName" type="text" required ng-maxlength="20"
                                ng-model="newUser.first_name" class="form-control"
                                placeholder="First Name (Required)"/>
-                        <span class="help-block has-error" ng-show="userForm.userFirstName.$error.maxlength">Too long</span>
+                        <span class="help-block has-error"
+                              ng-show="userForm.userFirstName.$error.maxlength">Too long</span>
 
                     </div>
                 </div>
 
-                <div class="form-group" ng-class="{'has-error':userForm.userLastName.$invalid && userForm.userLastName.$dirty}">
+                <div class="form-group"
+                     ng-class="{'has-error':userForm.userLastName.$invalid && userForm.userLastName.$dirty}">
                     <label for="userLastName" class="col-sm-3 control-label">Last name:</label>
 
                     <div class="col-sm-8">
                         <input id="userLastName" name="userLastName" type="text" ng-maxlength="20"
                                ng-model="newUser.last_name" class="form-control"
                                placeholder="Last Name"/>
-                        <span class="help-block has-error" ng-show="userForm.userLastName.$error.maxlength">Too long</span>
+                        <span class="help-block has-error"
+                              ng-show="userForm.userLastName.$error.maxlength">Too long</span>
                     </div>
                 </div>
                 <div class="form-group" ng-class="{'has-error':userForm.userAge.$invalid && userForm.userAge.$dirty}">
@@ -152,7 +160,8 @@
         <div class="modal-footer">
             <button ng-if="editMode" class="btn btn-danger pull-left" ng-click="userDelete()">Delete person</button>
 
-            <button class="btn btn-primary" ng-disabled="userForm.$invalid" ng-click="userEditOk()">Save changes</button>
+            <button class="btn btn-primary" ng-disabled="userForm.$invalid" ng-click="userEditOk()">Save changes
+            </button>
             <button class="btn" ng-click="userEditCancel()">Cancel</button>
         </div>
 

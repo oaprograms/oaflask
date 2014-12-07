@@ -4,6 +4,7 @@ import models
 from models import db
 from models import User
 from error import ValidationError
+from sqlalchemy_searchable import search
 
 api = Blueprint('api', __name__)
 
@@ -12,9 +13,11 @@ api = Blueprint('api', __name__)
 def get_users():
     return jsonify({"users" : [u.to_json() for u in User.query.all()]})
 
-@api.route("/users/<query>", methods=['GET'])
-def search_users(query): # TODO
-    return jsonify({"users" : [u.to_json() for u in User.query.all()]})
+@api.route("/users/search/<search_query>", methods=['GET'])
+def search_users(search_query): # TODO
+    #q = search(db.session.query(User), unicode(search_query)).limit(10).all()
+    q = User.query.search(unicode(search_query)).limit(10).all()
+    return jsonify({"users" : [u.to_json() for u in q]})
 
 @api.route("/users-full/", methods=['GET'])
 def get_users_full():

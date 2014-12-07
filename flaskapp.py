@@ -7,6 +7,7 @@ import api
 import models
 from models import db
 import codecs
+from sqlalchemy_searchable import make_searchable
 
 app = Flask(__name__)
 app.register_blueprint(api.api)
@@ -14,7 +15,7 @@ app.register_blueprint(api.api)
 app.config.from_pyfile('flaskapp.cfg')
 
 db.init_app(app)
-
+#make_searchable()
 
 #db.create_all()
 

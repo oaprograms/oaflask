@@ -106,7 +106,7 @@
         $scope.tabId = 1;
         $scope.reloadUsers(true);
 
-        $scope.user = {};
+        $scope.user = {gender:'male'};
         $scope.userInfo = {};
 //        $scope.reloadUser();
 
@@ -150,9 +150,7 @@
                     });
             }
         };
-$scope.alert = function(){
-    alert();
-};
+
         $scope.userEditOk = function () {
             $scope.savePersonEdit();
         };
