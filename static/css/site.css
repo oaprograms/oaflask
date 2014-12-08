@@ -20,7 +20,7 @@ header {
 nav{
     background-color: #eee;
     border: 1px solid #ccc;
-    padding: 15px 50px;
+    padding: 12px 60px;
     border-radius: 25px;
     text-align: center;
     display: block;
@@ -31,17 +31,12 @@ nav button{
 section{
     padding: 20px;
 }
-/*#selectPerson{*/
-    /*width: 250px;*/
-    /*display: inline-block;*/
-/*}*/
-/*#searchPerson{*/
-    /*width: 350px;*/
-    /*display: inline-block;*/
-/*}*/
 #userEditSaveBtn{
     padding-left: 30px;
     padding-right: 30px;
+}
+.padd{
+    padding: 5px;
 }
 aside{
     padding: 20px;

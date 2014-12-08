@@ -21,27 +21,29 @@
     </header>
     <nav>
         <div class="row">
-            <div id="selectPerson" class="col-sm-3">
-            <select class="form-control" ng-options="u.id as u.first_name + ' ' + u.last_name for u in users"
-                    ng-change="reloadUser()" ng-model="userId" title="Select person">
-            </select>
-        </div>
-        <div id="searchPerson" class="col-sm-5">
-            <input type="text" class="form-control" ng-model="searchUserText"
-                   placeholder="(Search users)" select-on-click
-                   typeahead-wait-ms="150" typeahead-min-length="1"
-                   typeahead-on-select="reloadUserId(searchUserText.id)"
-             typeahead="u as u.first_name + ' ' + u.last_name for u in searchUsers($viewValue)"  />
+                <div id="selectPerson" class="col-sm-3 padd">
+                    <select class="form-control" ng-options="u.id as u.first_name + ' ' + u.last_name for u in users"
+                            ng-change="reloadUser()" ng-model="userId" title="Select person">
+                    </select>
+                </div>
+                <div id="searchPerson" class="col-sm-4 padd">
+                    <input type="text" class="form-control" ng-model="searchUserText"
+                           placeholder="(Search users)" select-on-click
+                           typeahead-wait-ms="150" typeahead-min-length="1"
+                           typeahead-on-select="reloadUserId(searchUserText.id)"
+                           typeahead="u as u.first_name + ' ' + u.last_name for u in searchUsers($viewValue)"/>
 
-            <!--<input type="text" class="form-control"-->
-             <!--typeahead-wait-ms="150" typeahead-min-length="1"-->
-             <!--typeahead="user as user for user in searchUsers1($viewValue) | filter:$viewValue"  />-->
-            <!--.first_name + ' ' + user.last_name-->
-        </div>
-        <div class="col-sm-4">
-            <button class="btn btn-info" ng-click="openUserEditModal()">Edit person</button>
-            <button class="btn btn-info" ng-click="openUserAddModal()">+ Add person</button>
-        </div>
+                    <!--<input type="text" class="form-control"-->
+                    <!--typeahead-wait-ms="150" typeahead-min-length="1"-->
+                    <!--typeahead="user as user for user in searchUsers1($viewValue) | filter:$viewValue"  />-->
+                    <!--.first_name + ' ' + user.last_name-->
+                </div>
+
+
+            <div class="col-sm-5 padd">
+                <button class="btn btn-info" ng-click="openUserEditModal()">Edit person</button>
+                <button class="btn btn-info" ng-click="openUserAddModal()">+ Add person</button>
+            </div>
         </div>
 
     </nav>
@@ -53,7 +55,7 @@
                 <img ng-src="/img/{{(user.gender=='male') ? 'male':'female'}}.png" alt="No image"/>
                 {{ user.first_name }} {{ user.last_name }}
             </h3>
-            <table class="table user-info-table" >
+            <table class="table user-info-table">
                 <tr>
                     <td>gender:</td>
                     <td>{{user.gender}}</td>
@@ -80,7 +82,8 @@
         <aside class="col-sm-7 col-xs-12">
             <tabset>
                 <tab heading="Friends" active select="reloadUserInfo(1)">
-                    <p ng-show="!userInfo.friends.length">No friends to show</p>
+                    <p ng-show="tabState=='no-info'">No friends to show</p>
+                    <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
                     <ul class="user-list">
                         <li ng-repeat="u in userInfo.friends">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
@@ -90,7 +93,8 @@
 
                 </tab>
                 <tab heading="Friends of friends" select="reloadUserInfo(2)">
-                    <p ng-show="!userInfo.fof.length">No friends of friends to show</p>
+                    <p ng-show="tabState=='no-info'">No friends of friends to show</p>
+                    <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
                     <ul class="user-list">
                         <li ng-repeat="u in userInfo.fof">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
@@ -99,7 +103,8 @@
                     </ul>
                 </tab>
                 <tab heading="Suggested friends" select="reloadUserInfo(3)">
-                    <p ng-show="!userInfo.suggestions.length">No suggestions to show</p>
+                    <p ng-show="tabState=='no-info'">No suggestions to show</p>
+                    <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
                     <ul class="user-list">
                         <li ng-repeat="u in userInfo.suggestions">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>

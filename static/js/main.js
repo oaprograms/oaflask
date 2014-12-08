@@ -6,8 +6,6 @@
     function usersCtrl($scope, $http, $modal, $log) {
         var ctrl = this;
 
-//        $http.put('/users/1/friends', {friends: [2,3,4]});
-
         $scope.reloadUsers = function (resetUser) {
             if (typeof(resetUser) === 'undefined')resetUser = false;
             $http.get('/users/').
@@ -26,58 +24,54 @@
                     //TODO: set tab to 1
                 });
         };
-
         $scope.searchUsers = function (query) {
             return $http.get('/users/search/' + query)
                 .then(function (response) {
                     return response.data.users;
-
                 });
         };
-
         $scope.reloadUserId = function (id) {
 //            $scope.searchUserText = null;
             $scope.userId = id;
             $scope.reloadUser();
         };
-        $scope.alert = function () {
-            alert();
-        };
         $scope.addFriend = function (friend_id) {
             $scope.addFriendId = 0;
             $http.put('/users/' + $scope.userId + '/friends/', {'friend': friend_id}).
                 success(function (data) {
-                    $scope.reloadUser();
+                    $scope.reloadUserInfo($scope.tabId);
                 });
         };
         $scope.removeFriend = function (friend_id) {
             $http.delete('/users/' + $scope.userId + '/friends/' + friend_id).
                 success(function (data) {
-                    $scope.reloadUser();
+                    $scope.reloadUserInfo($scope.tabId);
                 });
         };
         $scope.reloadFriends = function () {
+            $scope.tabState = 'loading';
             $http.get('/users/' + $scope.userId + '/friends/').
                 success(function (data) {
                     $scope.userInfo.friends = data.users;
+                    $scope.tabState = data.users.length ? '' : 'no-info';
                 });
         };
         $scope.reloadFof = function () {
+            $scope.tabState = 'loading';
             $http.get('/users/' + $scope.userId + '/fof/').
                 success(function (data) {
                     $scope.userInfo.fof = data.users;
-
+                    $scope.tabState = data.users.length ? '' : 'no-info';
                 });
         };
-
         $scope.reloadSuggestions = function () {
+            $scope.tabState = 'loading';
             $http.get('/users/' + $scope.userId + '/suggested/').
                 success(function (data) {
                     $scope.userInfo.suggestions = data.users;
+                    $scope.tabState = data.users.length ? '' : 'no-info';
                 });
         };
-
-
         $scope.reloadUserInfo = function (tab_id) {
             $scope.tabId = tab_id;
             if ($scope.userId) {
@@ -122,6 +116,8 @@
 
 
     }
+
+////////////////////////////   Modal ctrl   ////////////////////
 
     app.controller('EditModalInstanceCtrl', function ($scope, $modalInstance, $http, parentScope) {
         $scope.newUser = parentScope.newUser;
