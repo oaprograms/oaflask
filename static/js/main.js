@@ -39,33 +39,32 @@
             $scope.addFriendId = 0;
             $http.put('/users/' + $scope.userId + '/friends/', {'friend': friend_id}).
                 success(function (data) {
+                    $scope.tabState='quiet';
                     $scope.reloadUserInfo($scope.tabId);
                 });
         };
         $scope.removeFriend = function (friend_id) {
             $http.delete('/users/' + $scope.userId + '/friends/' + friend_id).
                 success(function (data) {
+                    $scope.tabState='quiet';
                     $scope.reloadUserInfo($scope.tabId);
                 });
         };
-        $scope.reloadFriends = function () {
-            $scope.tabState = 'loading';
+        $scope.reloadFriends = function (quiet) {
             $http.get('/users/' + $scope.userId + '/friends/').
                 success(function (data) {
                     $scope.userInfo.friends = data.users;
                     $scope.tabState = data.users.length ? '' : 'no-info';
                 });
         };
-        $scope.reloadFof = function () {
-            $scope.tabState = 'loading';
+        $scope.reloadFof = function (quiet) {
             $http.get('/users/' + $scope.userId + '/fof/').
                 success(function (data) {
                     $scope.userInfo.fof = data.users;
                     $scope.tabState = data.users.length ? '' : 'no-info';
                 });
         };
-        $scope.reloadSuggestions = function () {
-            $scope.tabState = 'loading';
+        $scope.reloadSuggestions = function (quiet) {
             $http.get('/users/' + $scope.userId + '/suggested/').
                 success(function (data) {
                     $scope.userInfo.suggestions = data.users;
@@ -75,6 +74,8 @@
         $scope.reloadUserInfo = function (tab_id) {
             $scope.tabId = tab_id;
             if ($scope.userId) {
+                if($scope.tabState!='quiet')
+                    $scope.tabState = 'loading';
                 if ($scope.tabId == 1) {
                     $scope.reloadFriends();
                 } else if ($scope.tabId == 2) {
