@@ -14,7 +14,7 @@
     <script src="/static/js/main.js"></script>
 </head>
 <body ng-app="hillsbook">
-<div id="mainPage" ng-controller="UsersCtrl">
+<div id="mainPage" ng-controller="UsersCtrl" class="light-shadow">
 
     <header>
         <h1>30Hillbook</h1>
@@ -32,11 +32,6 @@
                            typeahead-wait-ms="150" typeahead-min-length="1"
                            typeahead-on-select="reloadUserId(searchUserText.id)"
                            typeahead="u as u.first_name + ' ' + u.last_name for u in searchUsers($viewValue)"/>
-
-                    <!--<input type="text" class="form-control"-->
-                    <!--typeahead-wait-ms="150" typeahead-min-length="1"-->
-                    <!--typeahead="user as user for user in searchUsers1($viewValue) | filter:$viewValue"  />-->
-                    <!--.first_name + ' ' + user.last_name-->
                 </div>
 
 
@@ -120,7 +115,8 @@
 
     <script type="text/ng-template" id="userEditTemplate.html">
         <div class="modal-header">
-            <h3 class="modal-title">User Info</h3>
+            <h3 ng-show="editMode" class="modal-title">Edit person</h3>
+            <h3 ng-show="!editMode" class="modal-title">Add person</h3>
         </div>
         <div class="modal-body">
 
@@ -135,7 +131,8 @@
                                ng-model="newUser.first_name" class="form-control"
                                placeholder="First Name (Required)" autofocus/>
                         <span class="help-block has-error"
-                              ng-show="userForm.userFirstName.$error.maxlength">Too long</span>
+                              ng-show="userForm.userFirstName.$error.maxlength">First name is too long
+                        </span>
 
                     </div>
                 </div>
@@ -149,7 +146,8 @@
                                ng-model="newUser.last_name" class="form-control"
                                placeholder="Last Name"/>
                         <span class="help-block has-error"
-                              ng-show="userForm.userLastName.$error.maxlength">Too long</span>
+                              ng-show="userForm.userLastName.$error.maxlength">Last name is too long
+                        </span>
                     </div>
                 </div>
                 <div class="form-group" ng-class="{'has-error':userForm.userAge.$invalid && userForm.userAge.$dirty}">

@@ -78,11 +78,13 @@ class User(db.Model):
                 raise ValidationError('Invalid User last name')
         else:
             self.last_name=""
-        if 'age' in json and json['age'] is not None:
+        if 'age' in json and json['age'] is not None and len(json['age']):
             if str(json['age']).isdigit():
                  self.age = json['age']
             else:
                 raise ValidationError('Invalid User age')
+        else:
+            self.age=None
         if 'gender' in json and json['gender'] in ['male', 'female', '', None]:
             self.gender = json['gender']
         elif not 'gender' in json:
@@ -158,6 +160,7 @@ def get_fof(id): #TODO: try to reduce to single sql query
             if fof.id not in ret_ids and fof.id not in friend_ids:
                 ret_ids.add(fof.id)
                 ret.append(fof.to_json())
+                if len(ret) >= 100: return ret #limit results
     return ret
 
 def get_suggested(id): #TODO: try to reduce to single sql query
@@ -167,6 +170,7 @@ def get_suggested(id): #TODO: try to reduce to single sql query
     friend_ids = [u.id for u in friends] + [id]
     for friend in friends:
         for fof in friend.friends:
+            if len(ret) >= 100: break #limit results
             if fof.id not in friend_ids:
                 if fof.id not in ret_ids:
                     ret_ids[fof.id] = 1
@@ -175,6 +179,9 @@ def get_suggested(id): #TODO: try to reduce to single sql query
                     ret_ids[fof.id] += 1
                 else:
                     ret_ids[fof.id] += 1
+        else:
+            continue
+        break
     for f in ret:
         f['common'] = ret_ids[f['id']]
 

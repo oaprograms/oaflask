@@ -31,7 +31,7 @@
                 });
         };
         $scope.reloadUserId = function (id) {
-//            $scope.searchUserText = null;
+            $scope.searchUserText = "";
             $scope.userId = id;
             $scope.reloadUser();
         };
