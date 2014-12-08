@@ -84,7 +84,7 @@
                 <tab heading="Friends" active select="reloadUserInfo(1)">
                     <p ng-show="tabState=='no-info'">No friends to show</p>
                     <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
-                    <ul class="user-list" ng-show="tabState==''">
+                    <ul class="user-list" ng-show="tabState!='loading'">
                         <li ng-repeat="u in userInfo.friends">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
                             <a href class="friend-unfriend" ng-click="removeFriend(u.id)">(remove)</a>
@@ -95,7 +95,7 @@
                 <tab heading="Friends of friends" select="reloadUserInfo(2)">
                     <p ng-show="tabState=='no-info'">No friends of friends to show</p>
                     <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
-                    <ul class="user-list" ng-show="tabState==''">
+                    <ul class="user-list" ng-show="tabState!='loading'">
                         <li ng-repeat="u in userInfo.fof">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
                             <a href class="friend-unfriend" ng-click="addFriend(u.id)">(add friend)</a>
@@ -105,7 +105,7 @@
                 <tab heading="Suggested friends" select="reloadUserInfo(3)">
                     <p ng-show="tabState=='no-info'">No suggestions to show</p>
                     <img ng-show="tabState=='loading'" src="/img/loading1.gif" alt="Loading..."/>
-                    <ul class="user-list" ng-show="tabState==''">
+                    <ul class="user-list" ng-show="tabState!='loading'">
                         <li ng-repeat="u in userInfo.suggestions">
                             <a href ng-click="reloadUserId(u.id)">{{ u.first_name }} {{ u.last_name }}</a>
                             - {{ u.common }} mutual friends
