@@ -78,7 +78,7 @@ class User(db.Model):
                 raise ValidationError('Invalid User last name')
         else:
             self.last_name=""
-        if 'age' in json and json['age'] is not None and len(json['age']):
+        if 'age' in json and json['age'] is not None and len(str(json['age'])):
             if str(json['age']).isdigit():
                  self.age = json['age']
             else:
