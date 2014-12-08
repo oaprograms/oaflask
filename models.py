@@ -130,21 +130,32 @@ def add_friendship(id_1, id_2):
     if id_1 == id_2:
         raise ValidationError('Error: same user u1 and u2')
     try:      # TODO: is this atomic?
-        db.engine.execute(friendship.insert(), {'id1':id_1, 'id2':id_2}, {'id1':id_2, 'id2':id_1})
-        #db.session.commit()
-    except:
-        print 'add_friendship error'
+
+        #db.session.execute(friendship.insert(), [{'id1':id_1, 'id2':id_2}, {'id1':id_2, 'id2':id_1}])
+        u1 = User.query.get(id_1)
+        u2 = User.query.get(id_2)
+        u1.friends.append(u2)
+        u2.friends.append(u1)
+        db.session.commit()
+    except Exception as e:
+        print 'add_friendship error: ' + str(e)
 
 
 #@staticmethod
 def remove_friendship(id_1, id_2):
-    #f1 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_1, friendship.c.id2==id_2)).one() #.filter().one()
-    #f2 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_2, friendship.c.id2==id_1)).one() #.filter().one()
-    #db.session.delete(f1) # no can do
-    #db.session.delete(f2)
-    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_1, friendship.c.id2 == id_2)))
-    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_2, friendship.c.id2 == id_1)))
-    db.session.commit()
+    #db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_1, friendship.c.id2 == id_2)))
+    #db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_2, friendship.c.id2 == id_1)))
+    #db.session.commit()
+    if id_1 == id_2:
+        raise ValidationError('Error: same user u1 and u2')
+    try:      # TODO: is this atomic?
+        u1 = User.query.get(id_1)
+        u2 = User.query.get(id_2)
+        u1.friends.remove(u2)
+        u2.friends.remove(u1)
+        db.session.commit()
+    except Exception as e:
+        print 'remove_friendship error: ' + str(e)
 
 def get_friends(id):
     #return db.engine.execute("select u.id, u.first_name, u.last_name from user as u, friendship where u.id = friendship.id2 and friendship.id1 = %(idd)s", idd=id).fetchall()
