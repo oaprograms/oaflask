@@ -2,14 +2,14 @@ body{
     background-color: #ddd;
 }
 #mainPage {
-    padding: 10px;
-    padding-bottom: 50px;
+    padding: 10px 20px 40px 20px;
     max-width: 900px;
     margin: 0 auto;
     background-color: white;
 }
 header {
-    padding-left: 20px;
+    padding-left: 25px;
+    color: #666;
 }
 .tab-pane{
     padding: 10px;
@@ -18,21 +18,27 @@ header {
     width: 500px;
 }
 nav{
-    background-color: #ddd;
-    padding: 8px 10px;
-    border-radius: 15px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 15px 50px;
+    border-radius: 25px;
+    text-align: center;
+    display: block;
 }
 nav button{
-    margin-left: 5px;
+    margin-left: 7px;
 }
-#selectPerson{
-    width: 250px;
-    display: inline-block;
+section{
+    padding: 20px;
 }
-#searchPerson{
-    width: 350px;
-    display: inline-block;
-}
+/*#selectPerson{*/
+    /*width: 250px;*/
+    /*display: inline-block;*/
+/*}*/
+/*#searchPerson{*/
+    /*width: 350px;*/
+    /*display: inline-block;*/
+/*}*/
 #userEditSaveBtn{
     padding-left: 30px;
     padding-right: 30px;
@@ -52,18 +58,6 @@ aside{
     box-shadow: 4px 10px 10px 0px rgba(117,117,117,0.21);
 }
 
-.boy-name{
-    /*color: #4a87c2;*/
-    color: #36556b;
-}
-.girl-name{
-    /*color: #a05f73;*/
-    color: #8c556c;
-}
-.tulbar{
-    padding: 6px 3px;
-    display: inline-block;
-}
 #addFriend{
     width: 150px;
     display: inline-block;
@@ -72,4 +66,11 @@ aside{
     color: gray; !important
     display: inline-block;
     margin-left: 10px;
+}
+.user-info-table{
+    width: 270px;
+    margin-left: 30px;
+}
+.user-name-heading{
+    margin-left: 30px;
 }

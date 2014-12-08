@@ -32,7 +32,7 @@
                 .then(function (response) {
                     return response.data.users;
 
-            });
+                });
         };
 
         $scope.reloadUserId = function (id) {
@@ -167,6 +167,17 @@
 
         $scope.userEditCancel = function () {
             $modalInstance.dismiss('cancel');
+        };
+    });
+
+    app.directive('selectOnClick', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                element.on('click', function () {
+                    this.select();
+                });
+            }
         };
     });
 }());

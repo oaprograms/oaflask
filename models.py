@@ -15,63 +15,12 @@ make_searchable()
 class UserQuery(BaseQuery, SearchQueryMixin):
     pass
 
+# table for representing user friendships
 friendship = db.Table('friendship', db.metadata,
-    db.Column("id1", db.Integer, db.ForeignKey('user.id'),primary_key=True),
-    db.Column("id2", db.Integer, db.ForeignKey('user.id'),primary_key=True)
+    db.Column("id1", db.Integer, db.ForeignKey('user.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
+    db.Column("id2", db.Integer, db.ForeignKey('user.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
 )
 
-def add_friendship(id_1, id_2):
-    if id_1 == id_2:
-        raise ValidationError('Error: same user u1 and u2')
-    try:      # TODO: is this atomic?
-        db.engine.execute(friendship.insert(), {'id1':id_1, 'id2':id_2}, {'id1':id_2, 'id2':id_1})
-        #db.session.commit()
-    except:
-        print 'add_friendship error'
-
-
-#@staticmethod
-def remove_friendship(id_1, id_2):
-    #f1 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_1, friendship.c.id2==id_2)).one() #.filter().one()
-    #f2 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_2, friendship.c.id2==id_1)).one() #.filter().one()
-    #db.session.delete(f1) # no can do
-    #db.session.delete(f2)
-    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_1, friendship.c.id2 == id_2)))
-    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_2, friendship.c.id2 == id_1)))
-    db.session.commit()
-
-def get_friends(id):
-    #return db.engine.execute("select u.id, u.first_name, u.last_name from user as u, friendship where u.id = friendship.id2 and friendship.id1 = %(idd)s", idd=id).fetchall()
-    return User.query.get_or_404(id).friends
-
-def get_fof(id): #TODO: try to reduce to single sql query
-    ret = []
-    ret_ids = set()
-    friends = User.query.get_or_404(id).friends
-    friend_ids = [u.id for u in friends] + [id]
-    for friend in friends:
-        for fof in friend.friends:
-            if fof.id not in ret_ids and fof.id not in friend_ids:
-                ret_ids.add(fof.id)
-                ret.append(fof.to_json())
-    return ret
-
-def get_suggested(id): #TODO: try to reduce to single sql query
-    ret = []
-    ret_ids = {}
-    friends = User.query.get_or_404(id).friends
-    friend_ids = [u.id for u in friends] + [id]
-    for friend in friends:
-        for fof in friend.friends:
-            if fof.id not in friend_ids:
-                if fof.id not in ret_ids:
-                    ret_ids[fof.id] = 1
-                elif ret_ids[fof.id] == 1:
-                    ret.append(fof.to_json())
-                    ret_ids[fof.id] += 1
-                else:
-                    ret_ids[fof.id] += 1
-    return ret
 
 class User(db.Model):
     query_class = UserQuery
@@ -141,9 +90,6 @@ class User(db.Model):
         else:
             raise ValidationError('Invalid User gender')
 
-    #def get_url(self):
-    #    return url_for('api.get_user', id=self.id, _external=True)
-
     def from_csv(self, user_str): # copied from zad1, only for testing
         """ Read user from string formatted: id;first_name;last_name;age;gender;friend1_id,friend2_id...
         :param user_str: string to parse
@@ -174,3 +120,62 @@ class User(db.Model):
             return self
         else:
             raise ValueError('invalid values found in: ' + user_str)
+
+
+# helper methods:
+
+def add_friendship(id_1, id_2):
+    if id_1 == id_2:
+        raise ValidationError('Error: same user u1 and u2')
+    try:      # TODO: is this atomic?
+        db.engine.execute(friendship.insert(), {'id1':id_1, 'id2':id_2}, {'id1':id_2, 'id2':id_1})
+        #db.session.commit()
+    except:
+        print 'add_friendship error'
+
+
+#@staticmethod
+def remove_friendship(id_1, id_2):
+    #f1 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_1, friendship.c.id2==id_2)).one() #.filter().one()
+    #f2 = db.session.query(friendship).filter(db.and_(friendship.c.id1==id_2, friendship.c.id2==id_1)).one() #.filter().one()
+    #db.session.delete(f1) # no can do
+    #db.session.delete(f2)
+    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_1, friendship.c.id2 == id_2)))
+    db.session.execute(friendship.delete().where(db.and_(friendship.c.id1 == id_2, friendship.c.id2 == id_1)))
+    db.session.commit()
+
+def get_friends(id):
+    #return db.engine.execute("select u.id, u.first_name, u.last_name from user as u, friendship where u.id = friendship.id2 and friendship.id1 = %(idd)s", idd=id).fetchall()
+    return User.query.get_or_404(id).friends
+
+def get_fof(id): #TODO: try to reduce to single sql query
+    ret = []
+    ret_ids = set()
+    friends = User.query.get_or_404(id).friends
+    friend_ids = [u.id for u in friends] + [id]
+    for friend in friends:
+        for fof in friend.friends:
+            if fof.id not in ret_ids and fof.id not in friend_ids:
+                ret_ids.add(fof.id)
+                ret.append(fof.to_json())
+    return ret
+
+def get_suggested(id): #TODO: try to reduce to single sql query
+    ret = []
+    ret_ids = {}
+    friends = User.query.get_or_404(id).friends
+    friend_ids = [u.id for u in friends] + [id]
+    for friend in friends:
+        for fof in friend.friends:
+            if fof.id not in friend_ids:
+                if fof.id not in ret_ids:
+                    ret_ids[fof.id] = 1
+                elif ret_ids[fof.id] == 1:
+                    ret.append(fof.to_json())
+                    ret_ids[fof.id] += 1
+                else:
+                    ret_ids[fof.id] += 1
+    for f in ret:
+        f['common'] = ret_ids[f['id']]
+
+    return ret

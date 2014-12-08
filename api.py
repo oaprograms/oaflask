@@ -54,20 +54,14 @@ def delete_user(id):
 
 @api.route("/users/<int:id>/friends/", methods=['PUT'])
 def add_friend(id):
-    u = User.query.get_or_404(id)
-    if not 'friend' in request.json: raise ValidationError('request should contain {friend: id}')
-    #friends = request.json['friends']
-    #for friend_id in friends:
+    if not 'friend' in request.json:
+        raise ValidationError('request should contain {friend: id}')
     models.add_friendship(id, request.json['friend'])
     db.session.commit()
     return jsonify({})
 
 @api.route("/users/<int:id>/friends/<int:id2>", methods=['DELETE'])
 def remove_friend(id, id2):
-    u = User.query.get_or_404(id)
-    #if not 'friends' in request.json: raise ValidationError('request should contain {friends: [id_list]}')
-    #friends = request.json['friends']
-    #for friend_id in friends:
     models.remove_friendship(id, id2)
     db.session.commit()
     return jsonify({})
